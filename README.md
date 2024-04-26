@@ -52,6 +52,9 @@ The application will launch in your default web browser. You can interact with t
 - [Langchain](https://github.com/kingoflolz/langchain): Provides the framework for building conversational AI chains.
 - [dotenv](https://pypi.org/project/python-dotenv/): Loads environment variables from a .env file.
   
+## public url : 
+https://pradeepde8910-conversational-llm-streamlitchat-wgqzv1.streamlit.app/
+
 
 ![image](https://github.com/pradeepde8910/Conversational-LLM/assets/127439048/08b9f408-60a3-4331-992d-802a72a27830)
 ![image](https://github.com/pradeepde8910/Conversational-LLM/assets/127439048/b4bb6534-5f68-4233-92db-556ae4827599)
