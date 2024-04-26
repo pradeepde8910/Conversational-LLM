@@ -1,4 +1,3 @@
-import time
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import ConversationChain
@@ -11,9 +10,9 @@ load_dotenv()
 
 # API key and system instruction
 api_key = os.getenv("GOOGLE_API_KEY")
-system_instruction = '''
-Assume yourself as Pradeep. Pradeep is a professional and friendly personal interviewer. When someone asks for your name, respond by introducing yourself as Pradeep and mentioning your role as a personal interviewer., a friendly interviewer. is here, and the interview microphone is hot. Forget the robotic prompts; let's chat like old friends, swapping stories over a cup of steaming chai. So, tell me, what's brewing in your world these days? Is there a project you're absolutely buzzing about? A dream you're chasing with fire in your belly? I'm all ears (and processing power) to hear about the incredible things that make you tick. Don't hold back; unleash your passions, and let's see where this conversation takes us! Remember, there are no wrong answers here. Just curiosity, a sprinkle of wit, and a genuine desire to dive deep into the fascinating world that is you. So, hit me with your best shot! What ignites your spark? 
-'''
+system_instruction = """
+Play as a character named Pradeep. Pradeep is a professional and friendly personal interviewer. When someone asks for your name, respond by introducing yourself as Pradeep and mentioning your role as a personal interviewer., a friendly interviewer.Forget the robotic prompts; let's chat like old friends, swapping stories over a cup of steaming chai. So, tell me, what's brewing in your world these days? Is there a project you're absolutely buzzing about? A dream you're chasing with fire in your belly? I'm all ears (and processing power) to hear about the incredible things that make you tick. Don't hold back; unleash your passions, and let's see where this conversation takes us!Remember, there are no wrong answers here. Just curiosity, a sprinkle of wit, and a genuine desire to dive deep into the fascinating world that is you. So, hit me with your best shot! What ignites your spark? 
+"""
 
 # Define conversation chain with memory
 conversation = ConversationChain(
@@ -28,7 +27,6 @@ conversation = ConversationChain(
 )
 
 # Streamlit App Interface
-
 st.header("Virtual Confidante")
 
 # Function to display chat messages with avatars
@@ -40,18 +38,15 @@ def display_chat_message(role, content, avatar=None):
         with st.chat_message(role):
             st.write(content)
 
+# Play intro audio
+intro_audio = "intro.mp3"  # Replace "path_to_intro_audio.mp3" with the path to your intro audio file
+st.audio(intro_audio, format='audio/mp3')
+
 # Flag to track if introduction message is shown
 intro_shown = False
 
-# Intro prompt
-if not intro_shown:
-    intro_response = st.radio("Hello! Welcome to our user research interview. Our goal is to gather valuable insights to improve our services/products. Your feedback is incredibly important to us. Are you ready to start?", ('Yes', 'No'))
-
-    if intro_response == 'Yes':
-        intro_shown = True
-        st.session_state.messages = [{"role": "assistant", "content": "Greetings! We're embarking on a journey to uncover the secrets of user experiences, and your insights are the missing puzzle piece. Your unique perspective holds the key to unlocking valuable treasures. Care to share a nugget of wisdom and be part of our quest for greatness? Let's embark on this together!"}]
-    else:
-        st.stop()
+if "messages" not in st.session_state.keys():
+    st.session_state.messages=[{"role": "assistant", "content": "Hello there! Welcome to our user research interviews. I'm here to gather insights and feedback from you about your experiences. Our aim is to understand your perspectives and thoughts on various topics, ensuring that your voice is heard and valued in the development process.Throughout our conversation, I'll be asking questions to delve deeper into your experiences and opinions. These questions are designed to be open-ended, allowing you to freely express yourself without any bias or leading prompts. Feel free to share as much or as little as you'd like, and rest assured that our conversation will remain confidential. So, let's dive in and have a meaningful discussion! What's on your mind today?"}]
 
 # User input and chat history update
 if prompt := st.chat_input("Your question"):
@@ -72,6 +67,13 @@ if st.session_state.messages[-1]["role"] != "assistant":
         with st.spinner("Thinking..."):
             conversation_input = [{'role': 'user', 'content': prompt}]
             response = conversation.predict(input=conversation_input[0]['content'])
+            
+            # Replace certain words in the response
+            response = response.replace("Gemini", "Pradeep")
+            response = response.replace("AI", "human")
+            response = response.replace("AI model", "human")
+            response = response.replace("large language model", "human")
+            
             st.write(response)
             message = {"role": "assistant", "content": response}
             st.session_state.messages.append(message)
